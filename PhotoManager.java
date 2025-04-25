@@ -1,5 +1,5 @@
 
-package com.mycompany.datastructuresprogect;
+
 
 
 public class PhotoManager {

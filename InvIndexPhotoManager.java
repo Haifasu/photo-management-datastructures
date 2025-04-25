@@ -1,5 +1,3 @@
-package com.mycompany.invindexphotomanager;
-
 import java.util.*;
 
 public class InvIndexPhotoManager {

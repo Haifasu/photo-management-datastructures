@@ -1,9 +1,3 @@
-
-package com.mycompany.album;
-
-import java.util.LinkedList;
-
-
 public class Album {
     
     private String name;
@@ -36,32 +30,51 @@ public class Album {
     
     public LinkedList<Photo> getPhotos(){
         LinkedList<Photo> result = new LinkedList<Photo>();
-        nbComps = 0; // نعيد العداد كل مرة يتم استدعاء الدالة
+        nbComps = 0;
 
-        // نحول شرط الألبوم إلى قائمة وسوم
         LinkedList<String> requiredTags = parseCondition(condition);
+        LinkedList<Photo> allPhotos = manager.getPhotos();
 
-        for (Photo photo : manager.getPhotos()) {
-            LinkedList<String> photoTags = photo.getTags();
-            boolean match = true;
+        if (!allPhotos.empty()) {
+            allPhotos.findFirst();
+            for (int i = 0; i < allPhotos.getSize(); i++) {
+                Photo photo = allPhotos.retrieve();
+                LinkedList<String> photoTags = photo.getTags();
+                boolean match = true;
 
-            for (String tag : requiredTags) {
-                boolean found = false;
-                for (String pt : photoTags) {
-                    nbComps++; // نحسب المقارنة
-                    if (pt.equals(tag)) {
-                        found = true;
-                        break;
+                if (!requiredTags.empty()) {
+                    requiredTags.findFirst();
+                    for (int j = 0; j < requiredTags.getSize(); j++) {
+                        String tag = requiredTags.retrieve();
+                        boolean found = false;
+
+                        if (!photoTags.empty()) {
+                            photoTags.findFirst();
+                            for (int k = 0; k < photoTags.getSize(); k++) {
+                                nbComps++;
+                                if (photoTags.retrieve().equals(tag)) {
+                                    found = true;
+                                    break;
+                                }
+                                photoTags.findNext();
+                            }
+                        }
+
+                        if (!found) {
+                            match = false;
+                            break;
+                        }
+
+                        requiredTags.findNext();
                     }
                 }
-                if (!found) {
-                    match = false;
-                    break;
-                }
-            }
 
-            if (match) {
-                result.insert(photo); // أضف الصورة إذا حققت كل الوسوم
+                if (match) {
+                    result.findFirst(); // لازم نحدد موقع قبل الإدراج
+                    result.insert(photo);
+                }
+
+                allPhotos.findNext();
             }
         }
 
@@ -72,11 +85,12 @@ public class Album {
     private LinkedList<String> parseCondition(String condition) {
         LinkedList<String> tagsList = new LinkedList<String>();
         if (condition == null || condition.trim().isEmpty()) {
-            return tagsList; // شرط فارغ، نعيد قائمة فارغة (تعني كل الصور)
+            return tagsList;
         }
 
         String[] tagsArray = condition.split("\\s*AND\\s*");
         for (String tag : tagsArray) {
+            tagsList.findFirst(); // لازم قبل كل insert
             tagsList.insert(tag.trim());
         }
         return tagsList;

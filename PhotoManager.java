@@ -1,5 +1,5 @@
 
-
+package com.mycompany.datastructuresprogect;
 
 
 public class PhotoManager {
@@ -7,28 +7,29 @@ public class PhotoManager {
     LinkedList<Photo> photos;
     
     public PhotoManager() {
- photos = new LinkedList<Photo>();
+ photos = new LinkedList<>();
 }
     
 
-    public LinkedList<Photo> getPhotos(){
-        return photos;
-    }
-    
     
     public void addPhoto(Photo p){
+        
         if (photos.empty() ){
             photos.insert(p);
             return;
         }
            photos.findFirst();
-           while( !photos.last() ){
+           
+           do{
                if(photos.retrieve().getPath().equals(p.getPath()))
                    return;
+               
+               if (photos.last()) 
+                  break;
+               
                photos.findNext();
-           }
-           if(photos.retrieve().getPath().equals(p.getPath()))
-                   return;
+           }while(true);
+           
            photos.insert(p);
         
     }
@@ -39,16 +40,23 @@ public class PhotoManager {
               return;
           
           photos.findFirst();
-           while( !photos.last() ){
+           do{
                
                if(photos.retrieve().getPath().equals(path)){
                    photos.remove();
                    return;
                }
+               if (photos.last()) break;
                 photos.findNext();
-           }
-           if(photos.retrieve().getPath().equals(path))
-                   photos.remove();
+           }while(true);
+           
+          
            
      }
+     
+     
+    public LinkedList<Photo> getPhotos(){
+        return photos;
+    }
+    
 }

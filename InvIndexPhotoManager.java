@@ -1,52 +1,83 @@
-import java.util.*;
+package com.mycompany.datastructuresprogect;
+
 
 public class InvIndexPhotoManager {
+    
+       
+        BST<LinkedList<Photo>> invertedIndex;
+        
+        
+    public InvIndexPhotoManager(){
+        invertedIndex = new BST<LinkedList<Photo>>();
+        
+}
+    public void addPhoto(Photo p){
+        LinkedList<String> tags = p.getTags();
+        LinkedList<Photo> Photos;
 
-    private BST<LinkedList<String>> index;
-
-    public InvIndexPhotoManager() {
-        index = new BST<>();
+        if (tags.empty())
+            return;
+        
+        tags.findFirst();
+        
+        while(! tags.last()){
+            
+            if( invertedIndex.findKey(tags.retrieve()) ){
+                Photos = invertedIndex.retrieve();
+            } else
+                Photos = new LinkedList<>();
+            
+            Photos.insert(p);
+            invertedIndex.insert(tags.retrieve(), Photos);
+            tags.findNext();
+            
+        }
+        if( invertedIndex.findKey(tags.retrieve()) ){
+                Photos = invertedIndex.retrieve();
+            } else
+                Photos = new LinkedList<>();
+            
+            Photos.insert(p);
+            invertedIndex.insert(tags.retrieve(), Photos);
+            
     }
-
-    // إضافة صورة إلى كلمة مفتاحية
-    public void addPhoto(String keyword, String photoName) {
-        if (index.findkey(keyword)) {
-            // الكلمة موجودة، نضيف الصورة لقائمة الصور
-            LinkedList<String> photos = index.retrieve();
-            if (!photos.contains(photoName)) {
-                photos.add(photoName);
+    
+    public void deletePhoto(String path){
+        String tags = invertedIndex.inOrder();
+        if ( tags == null)
+            return;
+        
+        String[] tagArray = tags.split(" ");
+        int i = 0;
+        while( i < tagArray.length ){
+  
+            if(invertedIndex.findKey(tagArray[i])){
+                
+            LinkedList<Photo> P = invertedIndex.retreive();
+            
+            if ( !P.empty() ) 
+            P.findFirst();
+            
+            Photo current = P.retrieve();
+            
+            while(!P.last()){
+              if(current.getPath().equals(path)) 
+                  P.remove();
+            else
+                  P.findNext();
+            
+              
+             if (P.empty()) 
+                invertedIndex.remove_key(tagArray[i]);
             }
-        } else {
-            // الكلمة غير موجودة، ننشئ قائمة جديدة ونضيفها
-            LinkedList<String> photos = new LinkedList<>();
-            photos.add(photoName);
-            index.insert(keyword, photos);
-        }
-    }
-
-    // حذف صورة من كلمة مفتاحية
-    public void removePhoto(String keyword, String photoName) {
-        if (index.findkey(keyword)) {
-            LinkedList<String> photos = index.retrieve();
-            photos.remove(photoName);
-            // إذا ما بقي صور، نحذف الكلمة المفتاحية من الشجرة
-            if (photos.isEmpty()) {
-                index.remove_key(keyword);
-            }
-        }
-    }
-
-    // استرجاع قائمة الصور المرتبطة بكلمة مفتاحية
-    public List<String> getPhotos(String keyword) {
-        if (index.findkey(keyword)) {
-            return index.retrieve();
-        }
-        return new ArrayList<>(); // ترجع قائمة فاضية إذا ما لقاها
-    }
-
-    // طباعة كل الكلمات المفتاحية
-    public void printAllKeywords() {
-        System.out.println("All keywords in order:");
-        System.out.println(index.inOrder());
+             
+            
+        
+            i++;
+            
+    }}}
+    
+    public BST<LinkedList<Photo>> getPhotos(){
+        return invertedIndex;
     }
 }

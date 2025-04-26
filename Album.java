@@ -3,13 +3,13 @@ public class Album {
     private String name;
     private String condition;
     private PhotoManager manager;
-    private int nbComps; 
+    private int NbComps;
     
     public Album (String name, String condition, PhotoManager manager){
         this.name = name;
         this.condition = condition;
         this.manager = manager;
-        this.nbComps = 0;
+        this.NbComps =0;
     }
     
     public String getName(){
@@ -24,76 +24,90 @@ public class Album {
         return manager;
     }
     
-    public int getNbComps(){
-        return nbComps;
-    }
-    
-    public LinkedList<Photo> getPhotos(){
-        LinkedList<Photo> result = new LinkedList<Photo>();
-        nbComps = 0;
-
-        LinkedList<String> requiredTags = parseCondition(condition);
-        LinkedList<Photo> allPhotos = manager.getPhotos();
-
-        if (!allPhotos.empty()) {
-            allPhotos.findFirst();
-            for (int i = 0; i < allPhotos.getSize(); i++) {
-                Photo photo = allPhotos.retrieve();
-                LinkedList<String> photoTags = photo.getTags();
-                boolean match = true;
-
-                if (!requiredTags.empty()) {
-                    requiredTags.findFirst();
-                    for (int j = 0; j < requiredTags.getSize(); j++) {
-                        String tag = requiredTags.retrieve();
-                        boolean found = false;
-
-                        if (!photoTags.empty()) {
-                            photoTags.findFirst();
-                            for (int k = 0; k < photoTags.getSize(); k++) {
-                                nbComps++;
-                                if (photoTags.retrieve().equals(tag)) {
-                                    found = true;
-                                    break;
-                                }
-                                photoTags.findNext();
-                            }
+        // Return all photos that satisfy the album condition
+        public LinkedList<Photo> getPhotos()
+        {
+                LinkedList<Photo> Rphotos = new LinkedList<Photo>();
+                {
+                    LinkedList<Photo> photos1 = manager.getPhotos();
+                    if (! photos1.empty())
+                    {
+                        photos1.findFirst();
+                        while (! photos1.last())
+                        {
+                            Rphotos.insert(new Photo(photos1.retrieve().getPath(), photos1.retrieve().getTags()));
+                            photos1.findNext();
                         }
-
-                        if (!found) {
-                            match = false;
-                            break;
-                        }
-
-                        requiredTags.findNext();
+                        Rphotos.insert(new Photo(photos1.retrieve().getPath(), photos1.retrieve().getTags()));
                     }
                 }
-
-                if (match) {
-                    result.findFirst(); // لازم نحدد موقع قبل الإدراج
-                    result.insert(photo);
+                NbComps =0 ;
+                
+                if (this.condition.compareTo("") != 0)
+                {
+                    String [] Array = condition.split(" AND ");
+                    
+                    Rphotos.findFirst();
+                    while ( ! Rphotos.last())
+                    {
+                        Photo photo = Rphotos.retrieve();
+                        //System.out.println("test " + photo.getPath());
+                        if ( ! allAvilable (photo.allTags , Array ))
+                            Rphotos.remove();
+                        else
+                            Rphotos.findNext();
+                    }
+                    Photo photo11 = Rphotos.retrieve();
+                    //System.out.println("testlast " + photo11.getPath());
+                    if ( ! allAvilable (photo11.allTags , Array ))
+                        Rphotos.remove();
+                    else
+                        Rphotos.findNext();
                 }
+                return Rphotos;
+        }
+       
+        // Return the number of tag comparisons used to find all photos of the album
+        public int getNbComps()
+        {
+            return NbComps;
+        }
 
-                allPhotos.findNext();
+        private boolean allAvilable ( LinkedList<String> AllTags , String [] Array )
+        {
+            boolean continue1 = true;
+            if (AllTags.empty())
+                continue1 = false;
+            else
+            {
+                for ( int i = 0 ; i < Array.length && continue1 ; i++)
+                {
+                    boolean found_in_tags = false;
+
+                    AllTags.findFirst();
+
+                    while (!AllTags.last())
+                    {
+                        this.NbComps ++ ;    
+                        //System.out.println(AllTags.retrieve() + " " + Array[i]);
+                        if (AllTags.retrieve().compareToIgnoreCase(Array[i]) == 0)
+                        {
+                            found_in_tags = true;
+                            break;
+                        }
+                        AllTags.findNext();
+                    }
+                    if (! found_in_tags )
+                    {
+                        this.NbComps ++ ;
+                        if (AllTags.retrieve().compareToIgnoreCase(Array[i]) == 0)
+                            found_in_tags = true;
+                    }
+                    if ( ! found_in_tags )
+                        continue1 = false;
+                }
             }
+            return continue1;
         }
-
-        return result;
-    }
-
-    // دالة مساعدة لتحويل شرط إلى قائمة وسوم
-    private LinkedList<String> parseCondition(String condition) {
-        LinkedList<String> tagsList = new LinkedList<String>();
-        if (condition == null || condition.trim().isEmpty()) {
-            return tagsList;
-        }
-
-        String[] tagsArray = condition.split("\\s*AND\\s*");
-        for (String tag : tagsArray) {
-            tagsList.findFirst(); // لازم قبل كل insert
-            tagsList.insert(tag.trim());
-        }
-        return tagsList;
-    }
-    
+       
 }

@@ -5,7 +5,7 @@ public class LinkedList<T> {
 	public Node (T val) {
 		data = val;
 		next = null;
-	}
+	}	
         }
 
         private Node<T> head;

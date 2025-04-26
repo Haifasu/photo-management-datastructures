@@ -1,7 +1,4 @@
 
-package com.mycompany.datastructuresprogect;
-
-
 public class PhotoManager {
     
     LinkedList<Photo> photos;
@@ -12,48 +9,67 @@ public class PhotoManager {
     
 
     
-    public void addPhoto(Photo p){
-        
-        if (photos.empty() ){
-            photos.insert(p);
-            return;
-        }
-           photos.findFirst();
-           
-           do{
-               if(photos.retrieve().getPath().equals(p.getPath()))
-                   return;
-               
-               if (photos.last()) 
-                  break;
-               
-               photos.findNext();
-           }while(true);
-           
-           photos.insert(p);
-        
+    // Add photo
+    public void addPhoto(Photo p)
+    {
+           if (! IsPhototAvailable(p.getPath(), photos) )     
+               photos.insert(p);
     }
     
-   
-     public void deletePhoto(String path){
-          if (photos.empty() )
-              return;
-          
-          photos.findFirst();
-           do{
-               
-               if(photos.retrieve().getPath().equals(path)){
-                   photos.remove();
-                   return;
-               }
-               if (photos.last()) break;
+    private boolean IsPhototAvailable(String p, LinkedList<Photo> List)
+    {
+        if (List.empty()) 
+           return false;
+
+        List.findFirst();
+        while ( !List.last())
+        {
+           if (List.retrieve().getPath().compareToIgnoreCase(p)== 0)
+               return true;
+
+           List.findNext();
+        }
+
+        if (List.retrieve().getPath().compareToIgnoreCase(p)== 0)
+           return true;
+
+        return false;
+    }
+
+
+    public void deletePhoto(String path)
+    {
+        if (! this.IsPhototAvailable(path, photos))
+            return;
+    
+        if (! photos.empty())
+         {
+            boolean found = false;
+        
+            photos.findFirst();
+            while (!found && !photos.last() )
+            {
+                Photo p = photos.retrieve();
+                if (p.getPath().compareToIgnoreCase(path) == 0)
+                {
+                    found = true; 
+                    photos.remove();
+                }
                 photos.findNext();
-           }while(true);
-           
-          
-           
-     }
-     
+            }
+            
+            if (!found )
+            {
+                Photo p = photos.retrieve();
+                if (p.getPath().compareToIgnoreCase(path) == 0)       
+                {
+                    found = true;
+                    photos.remove();
+                }
+            }
+        }
+    }
+
      
     public LinkedList<Photo> getPhotos(){
         return photos;

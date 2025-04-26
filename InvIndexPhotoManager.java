@@ -1,10 +1,10 @@
 
 public class InvIndexPhotoManager {
-        BST<LinkedList<Photo>> invertedIndex;
+        BST<LinkedList<Photo>> Inverted_Index;
         
         
     public InvIndexPhotoManager(){
-        invertedIndex = new BST<LinkedList<Photo>>();
+        Inverted_Index = new BST<LinkedList<Photo>>();
         
 }
     public void addPhoto(Photo p){
@@ -71,6 +71,6 @@ public class InvIndexPhotoManager {
             }
         }
     public BST<LinkedList<Photo>> getPhotos(){
-        return inverted_Index;
+        return Inverted_Index;
     }
 }

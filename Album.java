@@ -4,6 +4,7 @@ public class Album {
     private String condition;
     private PhotoManager manager;
     private int NbComps;
+
     
     public Album (String name, String condition, PhotoManager manager){
         this.name = name;
@@ -11,6 +12,7 @@ public class Album {
         this.manager = manager;
         this.NbComps =0;
     }
+
     
     public String getName(){
         return name;

@@ -194,8 +194,5 @@ public class InvAlbum {
                                   
             }
             return list1;
-        }
-
-        
-       
+        }      
 }

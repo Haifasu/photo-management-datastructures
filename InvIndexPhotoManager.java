@@ -2,17 +2,37 @@
 public class InvIndexPhotoManager {
         BST<LinkedList<Photo>> Inverted_Index;
         
+        // Constructor
+        public InvIndexPhotoManager()
+        {
+            Inverted_Index = new BST<LinkedList<Photo>>();
+        }
         
-    public InvIndexPhotoManager(){
-        Inverted_Index = new BST<LinkedList<Photo>>();
-        
-}
-    public void addPhoto(Photo p){
-        LinkedList<String> tags = p.getTags();
-         if (! tags.empty()){
+        // Add a photo
+        public void addPhoto(Photo p)
+        {
+            if ( Inverted_Index.findkey(" ") == true )
+            {
+                LinkedList<Photo> photos_inverted = Inverted_Index.retrieve();
+                photos_inverted.insert(p);
+                Inverted_Index.update(" ", photos_inverted);
+            }
+            else
+            {
+                LinkedList<Photo> photos_inverted = new LinkedList<Photo>();
+                photos_inverted.insert(p);
+                Inverted_Index.insert(" ", photos_inverted);
+            }
+            
+            LinkedList<String> tags = p.getTags();
+            
+            if (! tags.empty())
+            {
                 tags.findFirst();
-                while (!tags.last()) {
-                    if ( Inverted_Index.findkey(tags.retrieve()) == true ){
+                while (!tags.last())
+                {
+                    if ( Inverted_Index.findkey(tags.retrieve()) == true )
+                    {
                         LinkedList<Photo> photos_inverted = Inverted_Index.retrieve();
                         photos_inverted.insert(p);
                         Inverted_Index.update(tags.retrieve(), photos_inverted);
@@ -40,9 +60,15 @@ public class InvIndexPhotoManager {
             }
         }
         
-    
-    public void deletePhoto(String path){
-        String AllTags = Inverted_Index.inOrder();
+        // Delete a photo
+        public void deletePhoto(String path)
+        {
+            String AllTags = Inverted_Index.inOrder();
+            if (AllTags.length() == 0)
+               AllTags += " ";
+            else
+                AllTags += " AND " + " ";
+                
             String[] tags = AllTags.split(" AND ");
             
             for ( int i = 0; i < tags.length ; i++)
@@ -70,7 +96,10 @@ public class InvIndexPhotoManager {
                    Inverted_Index.update(tags[i], photos_inverted);
             }
         }
-    public BST<LinkedList<Photo>> getPhotos(){
-        return Inverted_Index;
-    }
-}
+        
+        // Return the inverted index of all managed photos
+        public BST<LinkedList<Photo>> getPhotos()
+        {
+            return Inverted_Index;
+        }
+ }

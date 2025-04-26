@@ -1,13 +1,11 @@
-
 public class PhotoManager {
     
     LinkedList<Photo> photos;
+
     
     public PhotoManager() {
  photos = new LinkedList<>();
 }
-    
-
     
     // Add photo
     public void addPhoto(Photo p)
@@ -73,6 +71,5 @@ public class PhotoManager {
      
     public LinkedList<Photo> getPhotos(){
         return photos;
-    }
-    
+    }  
 }

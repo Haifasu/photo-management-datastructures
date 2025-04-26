@@ -1,6 +1,5 @@
 
 public class Photo {
-    
           private String path;
           LinkedList<String> allTags = new LinkedList<>();
          

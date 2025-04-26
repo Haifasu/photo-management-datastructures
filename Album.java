@@ -1,34 +1,72 @@
+import java.util.Scanner;
+
 public class Album {
-    
-    private String name;
-    private String condition;
-    private PhotoManager manager;
-    private int NbComps;
+        private String name;
+        private String condition;
+        private PhotoManager manager;
+        private InvIndexPhotoManager invmanager;
+        private int NbComps;
 
-    
-    public Album (String name, String condition, PhotoManager manager){
-        this.name = name;
-        this.condition = condition;
-        this.manager = manager;
-        this.NbComps =0;
-    }
+        // Constructor
+        public Album(String name, String condition, PhotoManager manager, InvIndexPhotoManager invmanager )
+        {
+            this.name = name;
+            this.condition = condition;
+            this.manager = manager;
+            this.invmanager = invmanager;
+            NbComps =0;
+        }
+        
+        // Return the name of the album
+        public String getName()
+        {
+            return name;
+        }
+        
+        // Return the condition associated with the album
+        public String getCondition()
+        {
+            return condition;
+        }
 
-    
-    public String getName(){
-        return name;
-    }
-    
-    public String getCondition(){
-        return condition;
-    }
-    
-    public PhotoManager getManager(){
-        return manager;
-    }
-    
+        // Return the manager
+        public PhotoManager getManager()
+        {
+            return manager;
+        }
+
+        // Return the manager
+        public InvIndexPhotoManager getInvManager()
+        {
+            return invmanager;
+        }
+        
+        // Return the number of tag comparisons used to find all photos of the album
+        public int getNbComps()
+        {
+            return NbComps;
+        }
+        
         // Return all photos that satisfy the album condition
         public LinkedList<Photo> getPhotos()
         {
+            int choice = menu();
+            
+            LinkedList<Photo> result = new LinkedList<Photo>();
+            switch (choice )
+            {
+                case 1:
+                    result = getPhotosLL();
+                    break;
+                default:
+                    result = getPhotosBST();
+        }
+        return result;
+        }
+            
+       //=================================================================
+       private LinkedList<Photo> getPhotosLL()
+       {
                 LinkedList<Photo> Rphotos = new LinkedList<Photo>();
                 {
                     LinkedList<Photo> photos1 = manager.getPhotos();
@@ -69,11 +107,6 @@ public class Album {
                 return Rphotos;
         }
        
-        // Return the number of tag comparisons used to find all photos of the album
-        public int getNbComps()
-        {
-            return NbComps;
-        }
 
         private boolean allAvilable ( LinkedList<String> AllTags , String [] Array )
         {
@@ -111,5 +144,121 @@ public class Album {
             }
             return continue1;
         }
-       
+
+       //=================================================================
+        // Return all photos that satisfy the album condition
+        private LinkedList<Photo> getPhotosBST()
+        {
+            BST<LinkedList<Photo>> photosBST = invmanager.getPhotos();
+            LinkedList<Photo> Rphotos = new LinkedList<Photo>();
+            NbComps =0 ;
+            String [] tags;
+            
+
+            if (this.condition.compareTo("") == 0)
+            {
+                if ( photosBST.findkey(" ") == true)
+                    Rphotos = photosBST.retrieve();
+            }
+            else
+            {
+                tags = condition.split(" AND ");
+                for ( int i = 0 ; i < tags.length ; i++)
+                {
+                    if ( photosBST.findkey(tags[i]) == true)
+                    {
+                        if (i == 0)
+                        {
+                            LinkedList<Photo > miniTag = photosBST.retrieve();
+                            miniTag.findFirst();
+                            while ( ! miniTag.last())
+                            {
+                                Rphotos.insert(miniTag.retrieve());
+                                miniTag.findNext();
+                            }
+                            Rphotos.insert(miniTag.retrieve());
+                        }
+                        else
+                            Rphotos  = Function ( Rphotos , photosBST.retrieve());
+                    }
+                    else
+                    {
+                        Rphotos = new LinkedList<Photo>();
+                        break;
+                    }
+                }
+            }
+            return Rphotos;
+        }
+
+        // used when there is a condition 
+        private LinkedList<Photo> Function ( LinkedList<Photo> list1 ,LinkedList<Photo> list2)
+        {
+            LinkedList<Photo> result = new LinkedList<Photo>();
+            
+            // empty list with no photos
+            if ( list1.empty())
+                return result;
+            
+            if (list2.empty())
+                return list1;
+            
+            list2.findFirst();
+            while (! list2.last())
+            {
+                boolean found = false;
+                list1.findFirst();
+                while (! list1.last() && ! found)
+                {
+                    NbComps++;
+                    if (list2.retrieve().getPath().compareToIgnoreCase(list1.retrieve().getPath()) == 0)
+                        found = true;
+                    list1.findNext();
+                }
+                if (! found )
+                {
+                    NbComps++;
+                    if (list2.retrieve().getPath().compareToIgnoreCase(list1.retrieve().getPath()) == 0)
+                        found = true;
+                }
+                if (found )
+                    result.insert(list2.retrieve());
+
+                list2.findNext();
+            }
+            boolean found = false;
+            list1.findFirst();
+            while (! list1.last() && ! found)
+            {
+                NbComps++;
+                if (list2.retrieve().getPath().compareToIgnoreCase(list1.retrieve().getPath()) == 0)
+                    found = true;
+                list1.findNext();
+            }
+            if (! found )
+            {
+                NbComps++;
+                if ( list2.retrieve().getPath().compareToIgnoreCase(list1.retrieve().getPath()) == 0)
+                    found = true;
+            }
+            if (found )
+                result.insert(list2.retrieve());
+                                  
+            return result;
+        }
+        
+        //============================================================
+        private int menu()
+        {
+            Scanner input = new Scanner ( System.in);
+        
+            int choice;
+            System.out.println("1. Linked List");
+            System.out.println("2. BST");
+            System.out.println("Enter your choice ");
+            choice = input.nextInt();
+            
+            return choice;
+            
+        }
 }
